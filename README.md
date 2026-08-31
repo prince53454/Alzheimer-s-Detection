@@ -6,40 +6,28 @@ Deep learning model for classifying brain MRI scans into Alzheimer's disease sta
 
 ## 🔗 Live Detection App (Permanent Link)
 
-### 👉 [Open Alzheimer's Diagnostic AI Portal](https://huggingface.co/spaces/your-username/alzheimer-detection)
+### 👉 [Open Alzheimer's Diagnostic AI Portal](https://alzheimer-detection-xxxx.onrender.com)
 
-> **Replace `your-username` with your actual Hugging Face username after deploying.**
+> **Replace with your actual Render URL after deploying (see instructions below).**
 > This link never expires — open it anytime to run detection without regenerating links.
 
-### Quick Deploy to Get Your Permanent Link
+### Quick Deploy to Get Your Permanent Link (Free)
 
-1. **Install the Hugging Face CLI** (one time only):
-   ```bash
-   pip install huggingface_hub
-   ```
-
-2. **Login to Hugging Face**:
-   ```bash
-   huggingface-cli login
-   ```
-   *(Get your token from [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens))*
-
-3. **Create and deploy your Space**:
-   ```bash
-   # From this project directory:
-   git lfs install
-   git clone https://huggingface.co/spaces/YOUR_USERNAME/alzheimer-detection
-   cp app.py resnet_normalized.h5 requirements.txt README.md alzheimer-detection/
-   cd alzheimer-detection
-   git add .
-   git commit -m "Deploy Alzheimer's Detection App"
-   git push
-   ```
-
-4. **Update the link above** in this README with your actual URL:
-   `https://huggingface.co/spaces/YOUR_USERNAME/alzheimer-detection`
+1. **Go to [render.com](https://render.com)** and sign up (free)
+2. **Click "New +" → "Web Service"**
+3. **Connect your GitHub repo**: `https://github.com/prince53454/Alzheimer-s-Detection`
+4. **Configure the service**:
+   - **Name**: `alzheimer-detection`
+   - **Runtime**: `Docker`
+   - **Plan**: `Free`
+5. **Click "Create Web Service"** and wait ~3-5 minutes
+6. **Copy the URL** (e.g. `https://alzheimer-detection-xxxx.onrender.com`) and update the link above!
 
 > 💡 **After deployment, the app is live 24/7 for free. No more expired links!**
+> ⚠️ Free tier spins down after 15 min of inactivity — first load takes ~30 sec.
+
+### Source Code
+GitHub: https://github.com/prince53454/Alzheimer-s-Detection
 
 ---
 
