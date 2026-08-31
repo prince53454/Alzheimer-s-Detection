@@ -6,6 +6,7 @@ Uses TFLite for inference to fit within free-tier memory limits (512MB).
 import os
 import numpy as np
 from PIL import Image, ImageFilter
+import io
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -83,7 +84,7 @@ def make_placeholder(title="Not Available"):
     ax.text(0.5, 0.5, title, ha='center', va='center', color='#555',
             fontsize=16, fontweight='bold', transform=ax.transAxes)
     ax.axis('off')
-    buf = plt.BytesIO()
+    buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=100, facecolor=fig.get_facecolor())
     plt.close(fig)
     buf.seek(0)
@@ -113,7 +114,7 @@ def create_attention_map(image):
         axes[1].set_facecolor('#1a1a2e')
 
         plt.tight_layout()
-        buf = plt.BytesIO()
+        buf = io.BytesIO()
         fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
         buf.seek(0)
@@ -151,7 +152,7 @@ def create_preprocessing_preview(image):
             spine.set_color('#333')
 
         plt.tight_layout()
-        buf = plt.BytesIO()
+        buf = io.BytesIO()
         fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
         buf.seek(0)
@@ -187,7 +188,7 @@ def create_confidence_chart(pred_probs):
         ax.invert_yaxis()
 
         plt.tight_layout()
-        buf = plt.BytesIO()
+        buf = io.BytesIO()
         fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
         buf.seek(0)
@@ -227,7 +228,7 @@ def create_severity_gauge(prediction_idx):
                     ha='center', va='top', color='#aaa', fontsize=8)
 
         plt.tight_layout()
-        buf = plt.BytesIO()
+        buf = io.BytesIO()
         fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', facecolor=fig.get_facecolor())
         plt.close(fig)
         buf.seek(0)
