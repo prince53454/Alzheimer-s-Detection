@@ -1,17 +1,24 @@
 # Alzheimer's MRI Classification
 
+[![Live Demo](https://img.shields.io/badge/🚀_LIVE_DEMO-Click_Here_&_Use-brightgreen?style=for-the-badge&labelColor=0d1117)](https://alzheimer-s-detection-wi4c.onrender.com/)
+
+> **⬆️ Click the button above to launch the live Alzheimer's Diagnostic AI Portal!**
+> Upload any brain MRI and get instant classification with Grad-CAM explainability.
+
+---
+
 Deep learning model for classifying brain MRI scans into Alzheimer's disease stages using **ResNet50 transfer learning** with **Grad-CAM explainability**.
 
 ---
 
-## 🔗 Live Detection App (Permanent Link)
+## 🔗 Live Detection App
 
-### 👉 [Open Alzheimer's Diagnostic AI Portal](https://alzheimer-s-detection-wi4c.onrender.com)
+### 👉 [Open Alzheimer's Diagnostic AI Portal](https://alzheimer-s-detection-wi4c.onrender.com/)
 
 > **Permanent link — open it anytime to run detection without regenerating links!**
-> ⚠️ First visit after inactivity takes ~30s to wake up.
+> ⚠️ First visit after inactivity takes ~30s to wake up (free tier).
 
-### Quick Deploy to Get Your Permanent Link (Free)
+### Quick Deploy to Get Your Own Instance (Free)
 
 1. **Go to [render.com](https://render.com)** and sign up (free)
 2. **Click "New +" → "Web Service"**
