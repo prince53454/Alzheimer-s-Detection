@@ -12,12 +12,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-# ─── TFLite Runtime ──────────────────────────────────────────────────────────
-try:
-    import tflite_runtime.interpreter as tflite
-except ImportError:
-    import tensorflow.lite.python.interpreter as tflite
-
+# ─── ONNX Runtime ────────────────────────────────────────────────────────────
+import onnxruntime as ort
 import gradio as gr
 
 # ─── Constants ────────────────────────────────────────────────────────────────
@@ -47,32 +43,50 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(SCRIPT_DIR, 'model.tflite')
 
 # ─── Model Loading ────────────────────────────────────────────────────────────
-print(f"Loading TFLite model from: {MODEL_PATH}")
-interpreter = None
-input_details = None
-output_details = None
+ONNX_PATH = os.path.join(SCRIPT_DIR, 'model.onnx')
+TFLITE_PATH = os.path.join(SCRIPT_DIR, 'model.tflite')
 
-if os.path.exists(MODEL_PATH):
+print(f"Loading model...")
+session = None
+input_name = None
+
+if os.path.exists(ONNX_PATH):
     try:
-        interpreter = tflite.Interpreter(model_path=MODEL_PATH)
+        session = ort.InferenceSession(ONNX_PATH)
+        input_name = session.get_inputs()[0].name
+        print(f"ONNX model loaded: {ONNX_PATH}")
+    except Exception as e:
+        print(f"Error loading ONNX model: {e}")
+elif os.path.exists(TFLITE_PATH):
+    try:
+        # Fallback to TFLite if available
+        try:
+            import tflite_runtime.interpreter as tflite
+        except ImportError:
+            import tensorflow.lite.python.interpreter as tflite
+        interpreter = tflite.Interpreter(model_path=TFLITE_PATH)
         interpreter.allocate_tensors()
         input_details = interpreter.get_input_details()
         output_details = interpreter.get_output_details()
-        print("TFLite model loaded successfully.")
+        session = 'tflite'
+        print(f"TFLite model loaded: {TFLITE_PATH}")
     except Exception as e:
         print(f"Error loading TFLite model: {e}")
 else:
-    print(f"Warning: Model not found at {MODEL_PATH}")
+    print(f"Warning: No model found at {ONNX_PATH} or {TFLITE_PATH}")
 
 
 # ─── Prediction ───────────────────────────────────────────────────────────────
 def predict(image_resized):
-    """Run TFLite inference on a preprocessed image array."""
+    """Run inference on a preprocessed image array."""
     img = image_resized.astype(np.float32)
     img = np.expand_dims(img, axis=0)
-    interpreter.set_tensor(input_details[0]['index'], img)
-    interpreter.invoke()
-    preds = interpreter.get_tensor(output_details[0]['index'])
+    if session == 'tflite':
+        interpreter.set_tensor(input_details[0]['index'], img)
+        interpreter.invoke()
+        preds = interpreter.get_tensor(output_details[0]['index'])
+    else:
+        preds = session.run(None, {input_name: img})[0]
     return preds[0]
 
 
@@ -242,7 +256,7 @@ def create_severity_gauge(prediction_idx):
 def full_analysis(image):
     if image is None:
         return None, None, "### No image uploaded.", None, None, None
-    if interpreter is None:
+    if session is None:
         return None, None, "### Error: Model not loaded.", None, None, None
 
     # Run prediction (most critical)
@@ -373,8 +387,7 @@ with gr.Blocks(css=custom_css, title="Alzheimer's Diagnostic AI", theme=gr.theme
 
     gr.HTML("""
     <div class="main-header">
-        <h1>🧠 Alzheimer's Diagnostic AI Portal</h1>
-        <p>Advanced Brain MRI Analysis with Deep Learning & Region Attention</p>
+        <h1>🧠 Alzheimer's Diagnostic AI Portal</h1>            <p>Advanced Brain MRI Analysis with Deep Learning & Grad-CAM Explainability</p>
     </div>
     """)
 
@@ -392,7 +405,7 @@ with gr.Blocks(css=custom_css, title="Alzheimer's Diagnostic AI", theme=gr.theme
                         <strong>Architecture:</strong> ResNet50 (TFLite)<br>
                         <strong>Input Size:</strong> 176 × 208 pixels<br>
                         <strong>Classes:</strong> 4 Alzheimer's stages<br>
-                        <strong>Inference:</strong> TFLite Runtime (lightweight)
+                        <strong>Inference:</strong> ONNX Runtime (lightweight)
                     </div>
                     """)
 
@@ -441,18 +454,18 @@ with gr.Blocks(css=custom_css, title="Alzheimer's Diagnostic AI", theme=gr.theme
             - ✅ Real-time preprocessing visualization
             - ✅ Batch analysis support
             - ✅ Severity assessment gauge
-            - ✅ Lightweight TFLite inference (<500MB RAM)
+            - ✅ Lightweight ONNX inference (<500MB RAM)
 
             ### Technical Details
             - **Input**: Brain MRI (any resolution, resized to 176×208)
             - **Architecture**: ResNet50 (frozen base) + Dense(4, softmax)
-            - **Inference**: TFLite Runtime (~23MB model)
+            - **Inference**: ONNX Runtime (lightweight)
             - **Dataset**: ~33,000 brain MRI scans
             """)
 
     gr.HTML("""
     <div class="footer-text">
-        <p>Alzheimer's Diagnostic AI • Built with TFLite, ResNet50 & Gradio</p>
+        <p>Alzheimer's Diagnostic AI • Built with ONNX Runtime, ResNet50 & Gradio</p>
         <p>⚠️ This tool is for research purposes only. Always consult a medical professional.</p>
     </div>
     """)
