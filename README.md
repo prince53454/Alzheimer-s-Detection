@@ -9,6 +9,7 @@ Deep learning model for classifying brain MRI scans into Alzheimer's disease sta
 ### 👉 [Open Alzheimer's Diagnostic AI Portal](https://alzheimer-s-detection-ynt8.onrender.com)
 
 > **Permanent link — open it anytime to run detection without regenerating links!**
+> ⚠️ First visit after inactivity takes ~30s to wake up.
 
 ### Quick Deploy to Get Your Permanent Link (Free)
 
