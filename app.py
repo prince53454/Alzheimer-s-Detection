@@ -185,12 +185,19 @@ def create_severity_gauge(prediction_idx):
 
 def create_attention_map(image):
     """Gradient-free attention visualization using pixel intensity analysis."""
-    gray = np.mean(image, axis=2) if len(image.shape) == 3 else image
-    gray = gray.astype(np.float32)
-    # Simple edge/contrast attention
-    from scipy.ndimage import gaussian_filter
-    attention = gaussian_filter(gray, sigma=15)
-    attention = (attention - attention.min()) / (attention.max() - attention.min() + 1e-8)
+    try:
+        gray = np.mean(image, axis=2) if len(image.shape) == 3 else image
+        gray = gray.astype(np.float32)
+        # Simple blur using box filter (no scipy needed)
+        kernel_size = 15
+        kernel = np.ones((kernel_size, kernel_size)) / (kernel_size * kernel_size)
+        from PIL import ImageFilter
+        gray_pil = Image.fromarray((gray * 255).astype(np.uint8))
+        blurred = np.array(gray_pil.filter(ImageFilter.GaussianBlur(radius=10))).astype(np.float32) / 255.0
+        attention = (blurred - blurred.min()) / (blurred.max() - blurred.min() + 1e-8)
+    except Exception as e:
+        print(f"Attention map error: {e}")
+        attention = np.ones((image.shape[0], image.shape[1])) * 0.5
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     fig.patch.set_facecolor('#1a1a2e')
@@ -201,7 +208,7 @@ def create_attention_map(image):
     axes[0].set_facecolor('#1a1a2e')
 
     axes[1].imshow(image.astype('uint8'))
-    im = axes[1].imshow(attention, cmap='jet', alpha=0.45)
+    axes[1].imshow(attention, cmap='jet', alpha=0.45)
     axes[1].set_title('Region Attention Map', color='white', fontsize=12, fontweight='bold')
     axes[1].axis('off')
     axes[1].set_facecolor('#1a1a2e')
@@ -221,30 +228,32 @@ def full_analysis(image):
     if interpreter is None:
         return None, None, "### Error: Model not loaded.", None, None, None
 
-    # Preprocess
-    img_resized = np.array(Image.fromarray(image.astype('uint8')).resize((IMG_SIZE[1], IMG_SIZE[0])))
+    try:
+        # Preprocess
+        img_pil = Image.fromarray(image.astype('uint8'))
+        img_resized = np.array(img_pil.resize((IMG_SIZE[1], IMG_SIZE[0])))
 
-    # Predict
-    preds = predict(img_resized)
-    idx = int(np.argmax(preds))
-    label = CLASS_NAMES[idx]
-    conf = preds[idx] * 100
+        # Predict
+        preds = predict(img_resized)
+        idx = int(np.argmax(preds))
+        label = CLASS_NAMES[idx]
+        conf = preds[idx] * 100
 
-    # Attention map (gradient-free)
-    attention_img = create_attention_map(image)
+        # Attention map (gradient-free)
+        attention_img = create_attention_map(image)
 
-    # Preprocessing preview
-    preprocess_img = create_preprocessing_preview(image)
+        # Preprocessing preview
+        preprocess_img = create_preprocessing_preview(image)
 
-    # Confidence chart
-    confidence_chart = create_confidence_chart(preds)
+        # Confidence chart
+        confidence_chart = create_confidence_chart(preds)
 
-    # Severity gauge
-    severity_img = create_severity_gauge(idx)
+        # Severity gauge
+        severity_img = create_severity_gauge(idx)
 
-    # Result text
-    severity_text = ['Normal', 'Very Mild', 'Mild', 'Moderate'][CLASS_SEVERITY[label]]
-    result_markdown = f"""
+        # Result text
+        severity_text = ['Normal', 'Very Mild', 'Mild', 'Moderate'][CLASS_SEVERITY[label]]
+        result_markdown = f"""
 ### Diagnosis: **{label}**
 **Severity Level:** {severity_text}
 **AI Confidence:** {conf:.2f}%
@@ -253,7 +262,11 @@ def full_analysis(image):
 ---
 {CLASS_DESCRIPTIONS[label]}
 """
-    return attention_img, preprocess_img, result_markdown, confidence_chart, severity_img, label
+        return attention_img, preprocess_img, result_markdown, confidence_chart, severity_img, label
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return None, None, f"### Error during analysis\n``\n{str(e)}\n``", None, None, None
 
 
 # ─── Batch Analysis ───────────────────────────────────────────────────────────
