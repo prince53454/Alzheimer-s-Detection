@@ -1,3 +1,18 @@
+<!--STYLE-START-->
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/prince53454/prince53454/main/assets/banner.svg" width="100%"/>
+
+# ⟦ Alzheimer-s-Detection ⟧
+
+![status](https://img.shields.io/badge/STATUS-ONLINE-00ff9c?style=for-the-badge&labelColor=020806)
+![stars](https://img.shields.io/github/stars/prince53454/Alzheimer-s-Detection?style=for-the-badge&labelColor=020806&color=ff2d2d)
+
+<img src="https://raw.githubusercontent.com/prince53454/prince53454/main/assets/divider.svg" width="100%"/>
+
+</div>
+<!--STYLE-END-->
+
 # Alzheimer's MRI Classification
 
 [![Live Demo](https://img.shields.io/badge/🚀_LIVE_DEMO-Click_Here_&_Use-brightgreen?style=for-the-badge&labelColor=0d1117)](https://alzheimer-s-detection-wi4c.onrender.com/)
